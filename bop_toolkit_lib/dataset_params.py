@@ -73,6 +73,7 @@ def get_model_params(datasets_path, dataset_name, model_type=None):
   """
   # Object ID's.
   obj_ids = {
+    'custom': list(range(1, 2)),
     'lm': list(range(1, 16)),
     'lmo': [1, 5, 6, 8, 9, 10, 11, 12],
     'tless': list(range(1, 31)),
@@ -91,6 +92,7 @@ def get_model_params(datasets_path, dataset_name, model_type=None):
   # ID's of objects with ambiguous views evaluated using the ADI pose error
   # function (the others are evaluated using ADD). See Hodan et al. (ECCVW'16).
   symmetric_obj_ids = {
+    'custom': [],
     'lm': [3, 7, 10, 11],
     'lmo': [10, 11],
     'tless': list(range(1, 31)),
@@ -174,8 +176,18 @@ def get_split_params(datasets_path, dataset_name, split, split_type=None):
 
   p['im_modalities'] = ['rgb', 'depth']
 
+  # Linemod (CUSTOM).
+  if dataset_name == 'custom':
+    p['scene_ids'] = list(range(1, 2))
+    p['im_size'] = (640, 480)
+
+    if split == 'test':
+      p['depth_range'] = (500.90, 3002.35)
+      p['azimuth_range'] = (0, 2 * math.pi)
+      p['elev_range'] = (0, 0.5 * math.pi)
+
   # Linemod (LM).
-  if dataset_name == 'lm':
+  elif dataset_name == 'lm':
     p['scene_ids'] = list(range(1, 16))
     p['im_size'] = (640, 480)
 
@@ -405,24 +417,24 @@ def get_split_params(datasets_path, dataset_name, split, split_type=None):
 
     # Path template to a gray image.
     'gray_tpath': join(
-      split_path, '{scene_id:06d}', 'gray', '{im_id:06d}' + gray_ext),
+      split_path, '{scene_id:06d}', 'gray', '{im_id:04d}' + gray_ext),
 
     # Path template to an RGB image.
     'rgb_tpath': join(
-      split_path, '{scene_id:06d}', 'rgb', '{im_id:06d}' + rgb_ext),
+      split_path, '{scene_id:06d}', 'rgb', '{im_id:04d}' + rgb_ext),
 
     # Path template to a depth image.
     'depth_tpath': join(
-      split_path, '{scene_id:06d}', 'depth', '{im_id:06d}' + depth_ext),
+      split_path, '{scene_id:06d}', 'depth', '{im_id:04d}' + depth_ext),
 
     # Path template to a mask of the full object silhouette.
     'mask_tpath': join(
-      split_path, '{scene_id:06d}', 'mask', '{im_id:06d}_{gt_id:06d}.png'),
+      split_path, '{scene_id:06d}', 'mask', '{im_id:04d}.png'),
 
     # Path template to a mask of the visible part of an object silhouette.
     'mask_visib_tpath': join(
       split_path, '{scene_id:06d}', 'mask_visib',
-      '{im_id:06d}_{gt_id:06d}.png'),
+      '{im_id:04d}.png'),
   })
 
   return p

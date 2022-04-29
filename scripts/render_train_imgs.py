@@ -17,10 +17,13 @@ from bop_toolkit_lib import view_sampler
 # PARAMETERS.
 ################################################################################
 # See dataset_params.py for options.
-dataset = 'tyol'
+dataset = 'custom'
+
 
 # Radii of view spheres from which to render the objects.
-if dataset == 'lm':
+if dataset == 'custom':
+  radii = [400]  # There are only 3 occurrences under 400 mm.
+elif dataset == 'lm':
   radii = [400]  # There are only 3 occurrences under 400 mm.
 elif dataset == 'tless':
   radii = [650]

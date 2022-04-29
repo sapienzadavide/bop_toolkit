@@ -36,6 +36,7 @@ p = {
     'icmi': 15,
     'itodd': 5,
     'lm': 15,
+    'custom': 1,
     'lmo': 15,
     'ruapc': 15,
     'tless': 15,

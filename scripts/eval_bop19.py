@@ -50,6 +50,11 @@ p = {
       'type': 'mspd',
       'correct_th': [[th] for th in np.arange(5, 51, 5)]
     },
+    {
+      'n_top': -1,
+      'type': 'add',
+      'correct_th': [[th] for th in np.arange(0.05, 0.51, 0.05)]
+    },
   ],
 
   # Minimum visible surface fraction of a valid GT pose.

@@ -70,6 +70,7 @@ dp_model = dataset_params.get_model_params(
 misc.log('Initializing renderer...')
 
 # The renderer has a larger canvas for generation of masks of truncated objects.
+print(dp_split['im_size'])
 im_width, im_height = dp_split['im_size']
 ren_width, ren_height = 3 * im_width, 3 * im_height
 ren_cx_offset, ren_cy_offset = im_width, im_height
@@ -81,6 +82,7 @@ for obj_id in dp_model['obj_ids']:
   ren.add_object(obj_id, model_fpath)
 
 scene_ids = dataset_params.get_present_scene_ids(dp_split)
+print(scene_ids)
 for scene_id in scene_ids:
 
   # Load scene info and ground-truth poses.
@@ -194,6 +196,7 @@ for scene_id in scene_ids:
         inout.save_im(vis_path, vis)
 
   # Save the info for the current scene.
+  print(scene_gt_info_path)
   scene_gt_info_path = dp_split['scene_gt_info_tpath'].format(scene_id=scene_id)
   misc.ensure_dir(os.path.dirname(scene_gt_info_path))
   inout.save_json(scene_gt_info_path, scene_gt_info)
