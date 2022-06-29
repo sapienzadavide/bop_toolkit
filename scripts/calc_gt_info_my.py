@@ -196,7 +196,7 @@ for scene_id in scene_ids:
         inout.save_im(vis_path, vis)
 
   # Save the info for the current scene.
-  print(scene_gt_info_path)
   scene_gt_info_path = dp_split['scene_gt_info_tpath'].format(scene_id=scene_id)
+  print(scene_gt_info_path)
   misc.ensure_dir(os.path.dirname(scene_gt_info_path))
   inout.save_json(scene_gt_info_path, scene_gt_info)
