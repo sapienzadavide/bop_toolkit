@@ -27,6 +27,7 @@ p = {
         'icbin': 15,
         'icmi': 15,
         'itodd': 5,
+        'custom': 1,
         'lm': 15,
         'lmo': 15,
         'ruapc': 15,
