@@ -13,12 +13,24 @@ A Python toolkit of the BOP benchmark for 6D object pose estimation
 
 ### Python Dependencies
 
+- Anaconda 4.10.3
+
+To create conda environment: 
+```
+conda env create -f boptoolkit_env.yml
+```
+
 To install the required python libraries, run:
 ```
+conda activate boptoolkit
 pip install -r requirements.txt -e .
 ```
 
-In the case of problems, try to first run: ```pip install --upgrade pip setuptools```
+In the case of problems, try to first run: 
+```
+conda activate boptoolkit 
+pip install --upgrade pip setuptools
+```
 
 ### Vispy Renderer (default)
 
@@ -67,6 +79,7 @@ In [bop_toolkit_lib/config.py](https://github.com/thodan/bop_toolkit/blob/master
 
 ### 4. Evaluate the pose estimates
 ```
+conda activate boptoolkit 
 python scripts/eval_bop19.py --renderer_type=vispy --result_filenames=NAME_OF_CSV_WITH_RESULTS
 ```
 `--renderer_type`: "vispy", "python", or "cpp" (We recommend using "vispy" since it is easy to install and works headlessly. For "cpp", you need to install the C++ Renderer [bop_renderer](https://github.com/thodan/bop_renderer).).
@@ -75,6 +88,7 @@ python scripts/eval_bop19.py --renderer_type=vispy --result_filenames=NAME_OF_CS
 
 ### 5. Evaluate the detections / instance segmentations
 ```
+conda activate boptoolkit 
 python scripts/eval_bop_coco.py --result_filenames=NAME_OF_JSON_WITH_COCO_RESULTS --ann_type='bbox'
 ```
 --result_filenames: Comma-separated filenames with per-dataset coco results (place them under your `results_path` defined in your [config.py](bop_toolkit_lib/config.py)).  
@@ -83,6 +97,7 @@ python scripts/eval_bop_coco.py --result_filenames=NAME_OF_JSON_WITH_COCO_RESULT
 ## Convert BOP to COCO format
 
 ```
+conda activate boptoolkit 
 python scripts/calc_gt_coco.py
 ```
 
@@ -95,12 +110,14 @@ To annotate a new dataset in BOP format use [this tool](./scripts/annotation_too
 First install Open3d dependency
 
 ```
+conda activate boptoolkit 
 pip install open3d==0.15.2
 ```
 
 Edit the file paths in parameters section at the beginning of the file then run:
 
 ```
+conda activate boptoolkit 
 python scripts/annotation_tool.py
 ```
 
