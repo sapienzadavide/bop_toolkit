@@ -121,30 +121,29 @@ def main(args, p):
                 gt_org.setdefault(poses['scene_id'], {}).setdefault(
                     poses['im_id'], {}).setdefault(poses['obj_id'], []).append(poses)
 
-            if gt_filetype=='csv':
-                # Insert also scene_camera for now.
-                # scene_camera = inout.load_scene_camera(
-                #     dp_split['scene_camera_tpath'].format(scene_id=scene_id))
+            # Insert also scene_camera for now.
+            # scene_camera = inout.load_scene_camera(
+            #     dp_split['scene_camera_tpath'].format(scene_id=scene_id))
+            scene_gt_tot={}
+            for k1 in gt_org.keys():
+                scene_gt_tot[k1]={}
+                for k2 in gt_org[k1].keys():
+                    for k3 in gt_org[k1][k2].keys():
+                        im_id = -1
+                        tmp_list = []
+                        for i,pred in enumerate(gt_org[k1][k2][k3]):
+                            # Check im_ids on all obj id predictions
+                            if im_id==-1:
+                                im_id=pred['im_id']
+                            else:
+                                assert(im_id==pred['im_id'])
+                            tmp_list.append({'cam_R_m2c': gt_org[k1][k2][k3][i]['R'],
+                                                'cam_t_m2c': gt_org[k1][k2][k3][i]['t'],
+                                                'obj_bb': [0, 0, 0, 0],
+                                                'obj_id':gt_org[k1][k2][k3][i]['obj_id']})
+                        scene_gt_tot[k1][im_id] = tmp_list
 
-                scene_gt_tot={}
-                for k1 in gt_org.keys():
-                    scene_gt_tot[k1]={}
-                    for k2 in gt_org[k1].keys():
-                        for k3 in gt_org[k1][k2].keys():
-                            im_id = -1
-                            tmp_list = []
-                            for i,pred in enumerate(gt_org[k1][k2][k3]):
-                                # Check im_ids on all obj id predictions
-                                if im_id==-1:
-                                    im_id=pred['im_id']
-                                else:
-                                    assert(im_id==pred['im_id'])
-                                tmp_list.append({'cam_R_m2c': gt_org[k1][k2][k3][i]['R'],
-                                                 'cam_t_m2c': gt_org[k1][k2][k3][i]['t'],
-                                                 'obj_bb': [0, 0, 0, 0],
-                                                 'obj_id':gt_org[k1][k2][k3][i]['obj_id']})
-                            scene_gt_tot[k1][im_id] = tmp_list
-
+        misc.log('Computing errors ...')
         eval_calc_errors={}
         for scene_id, scene_targets in targets_org.items():
 
@@ -159,11 +158,11 @@ def main(args, p):
 
 
             scene_errs = []
+        
             for im_ind, (im_id, im_targets) in enumerate(scene_targets.items()):
 
                 # Intrinsic camera matrix.
                 # K = scene_camera[im_id]['cam_K']
-
                 for obj_id, target in im_targets.items():
 
                     # The required number of top estimated poses.
@@ -237,22 +236,23 @@ def main(args, p):
                                     # would be considered incorrect anyway.
                                     e = [float('inf')]
                                 else:
-                                    if error['type'] == 'ad':
-                                        if obj_id in dp_model['symmetric_obj_ids']:
-                                            e = [pose_error.adi(
-                                                R_e, t_e, R_g, t_g, models[obj_id]['pts'])]
-                                        else:
-                                            e = [pose_error.add(
-                                                R_e, t_e, R_g, t_g, models[obj_id]['pts'])]
-
-                                    elif error['type'] == 'add':
+                                    # if error['type'] == 'ad':
+                                    #     if obj_id in dp_model['symmetric_obj_ids']:
+                                    #         e = [pose_error.adi(
+                                    #             R_e, t_e, R_g, t_g, models[obj_id]['pts'])]
+                                    #     else:
+                                    #         e = [pose_error.add(
+                                    #             R_e, t_e, R_g, t_g, models[obj_id]['pts'])]
+                                    if error['type'] == 'add' or (error['type'] == 'ad' and obj_id not in dp_model['symmetric_obj_ids']):
                                         e = [pose_error.add(
                                             R_e, t_e, R_g, t_g, models[obj_id]['pts'])]
 
-                                    else:  # 'adi'
+                                    elif error['type'] == 'adi' or (error['type'] == 'ad' and obj_id in dp_model['symmetric_obj_ids']):
                                         e = [pose_error.adi(
                                             R_e, t_e, R_g, t_g, models[obj_id]['pts'])]
-
+                                    else: 
+                                        print("Error: missing if-else condiction")
+                                        exit()
                             elif error['type'] == 'cus':
                                 if sphere_projections_overlap:
                                     e = [pose_error.cus(
@@ -286,6 +286,10 @@ def main(args, p):
                             'errors': errs
                         })
             eval_calc_errors[scene_id] = scene_errs
+        # write eval_calc_errors in json file
+        with open("eval_calc_errors.json", "w") as outfile:
+            json.dump(eval_calc_errors, outfile)  
+        
         misc.log('Errors have been computed!')
         misc.log('=====================================================')
 

@@ -140,18 +140,49 @@ R or "Refine" button will call ICP algorithm to do local refinement of the annot
 
 Alternative evaluation script to compute ADD(-S) and Recall.
 
-
-
 ```
-python scripts/est_pose_file2add_accuracy.py --result_filename <path.-to-csv-estimation-file> --dataset_path
-<path-to-dataset-folder> --gt_filename <path-to-groundtruth-file>
---gt_filetype <type> 
+python scripts/est_pose_file2add_accuracy.py --result_filename <path-to-csv-estimation-file> --dataset_path <path-to-dataset-folder> --gt_filename <path-to-groundtruth-file> --gt_filetype <type> 
+#python scripts/est_pose_file2add_accuracy.py --result_filename /home/elena/repos/datasetMetriche2/underwater/prova_underwater-test.csv --dataset_path /home/elena/repos/bop_toolkit/yolo6D_evaluation_files --gt_filename /home/elena/repos/datasetMetriche2/underwater/prova_underwater-test.csv
 ```
 where:
 
- - path-to-csv-estimation-file: path to the csv file with the estimated poses. Each row must contain: scene_id, im_id, obj_id, score, R, t, time. 
+ - path-to-csv-estimation-file: path to the csv file with the estimated poses. Each row must contain: scene_id, im_id, obj_id, score, R, t, time.
  - path-to-dataset-folder: path to the dataset folder. It is a folder with the dataset name, containing the test_target_BOP.json file and two folders (models and models_eval, which are the same of BOP dataset)
  - path-to-groundtruth-file: path to the csv or json file with the ground-truth poses. The csv file must be written in the same format of the < path-to-csv-estimation-file > file, while json file must be scene_gt of BOP Dataset format. 
  - type: "json" or "csv" type. It specifies the < path-to-groundtruth-file > file extension.
 
-python scripts/est_pose_file2add_accuracy.py --result_filename /home/elena/repos/datasetMetriche2/underwater/prova_underwater-test.csv --gt_filename /home/elena/repos/datasetMetriche2/underwater/prova_underwater-test.csv
+
+### Yolo-6D
+
+To evaluate the yolo-6D model please referred to the corresponding repo and README:
+
+```
+python valid.py <data-file> <cfg-file> <weights>
+# python valid.py custom_cfg/hotstab.data custom_cfg/yolo-pose.cfg backup/hotstab/model.weights
+```
+Where: 
+ - data-file is the required file for training yolo-6D. It contains the trainable objects' names.
+ - cfg-file is the required file for training yolo-6D. It contains the hyperparameters, settings and so on.
+ - weights are the pre-trained weights used in evaluation. 
+
+Once run it, a .mat file will be generated in ".\backup\< obj-name >\" and the filename will be "prediction_< dataset >_< obj_name >.mat". (for example: "backup/hotstab/predictions_linemod_hotstab.mat") 
+
+To compute metrics for yolo-6D predictions, you must create the csv files. 
+
+```
+python scripts/yolo6d2BOP.py -i <path-to-mat-file> -o <output-csv-filename> -t <original-test-txt-file-used-in-yolo6d-evaluation> -m <mode>
+#python scripts/yolo6d2BOP.py -i ../../6d_pose_nn_repo/yolo-6d/results/res_tr_etutte_lr0005_bs32/predictions_linemod_hotstab.mat -o yolo6dpred_custom-test.csv -t ../../6d_pose_nn_repo/yolo-6d/yolo6D_ds/train/hotstab/test.txt -m pred
+#python scripts/yolo6d2BOP.py -i ../../6d_pose_nn_repo/yolo-6d/results/res_tr_etutte_lr0005_bs32/predictions_linemod_hotstab.mat -o yolo6dgt_custom-test.csv -t ../../6d_pose_nn_repo/yolo-6d/yolo6D_ds/train/hotstab/test.txt -m gt
+```
+Where: 
+ - path-to-mat-file: it is the mat file generated during the yolo-6D evaluation. It is generally in "< yolo6d-folder\backup\< obj-name >\prediction_< dataset >_< obj_name >.mat" (for example "/yolo-6d/backup/hotstab/predictions_linemod_hotstab.mat")
+ - output-csv-filename : the desired output csv file name. it is recommended to use the following format: "< model >< mode >_custom-test.csv". (ex: yolo6dpred_custom-test.csv, yolo6dgt_custom-test.csv) 
+ - original-test-txt-file-used-in-yolo6d-evaluation: path to the test.txt file in the yolo6D dataset. 
+ - mode: type string. it specifies which file have to be generated: predictions or ground-truths. It can be "pred" or "gt". 
+
+Then to compute the metrics, you can run: 
+```
+python scripts/est_pose_file2add_accuracy.py --result_filename <path-to-csv-estimation-file> --dataset_path <path-to-dataset-folder> --gt_filename <path-to-groundtruth-file> --gt_filetype <type>
+#python scripts/est_pose_file2add_accuracy.py --result_filename ./yolo6dpred_custom-test.csv --dataset_path ./ --gt_filename ./yolo6dgt_custom-test.csv
+#python scripts/est_pose_file2add_accuracy.py --result_filename /home/elena/repos/bop_toolkit/yolo6D_evaluation_files/yolo6dpred_custom-test.csv --dataset_path /home/elena/repos/bop_toolkit/yolo6D_evaluation_files --gt_filename /home/elena/repos/bop_toolkit/yolo6D_evaluation_files/yolo6dgt_custom-test.csv
+```
