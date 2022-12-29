@@ -138,15 +138,19 @@ R or "Refine" button will call ICP algorithm to do local refinement of the annot
 
 ## Custom eval 
 
-Alternative evaluation script to compute ADD(-S) and Recall. 
+Alternative evaluation script to compute ADD(-S) and Recall.
+
+
 
 ```
-python scripts/est_pose_file2add_accuracy.py --result_filename <path.-to-csv-estimation-file> --gt_filename <path-to-groundtruth-file>
+python scripts/est_pose_file2add_accuracy.py --result_filename <path.-to-csv-estimation-file> --dataset_path
+<path-to-dataset-folder> --gt_filename <path-to-groundtruth-file>
 --gt_filetype <type> 
 ```
 where:
 
- - path-to-csv-estimation-file: path to the csv file with the estimated poses. Each row must contain: scene_id, im_id, obj_id, score, R, t, time.  
+ - path-to-csv-estimation-file: path to the csv file with the estimated poses. Each row must contain: scene_id, im_id, obj_id, score, R, t, time. 
+ - path-to-dataset-folder: path to the dataset folder. It is a folder with the dataset name, containing the test_target_BOP.json file and two folders (models and models_eval, which are the same of BOP dataset)
  - path-to-groundtruth-file: path to the csv or json file with the ground-truth poses. The csv file must be written in the same format of the < path-to-csv-estimation-file > file, while json file must be scene_gt of BOP Dataset format. 
  - type: "json" or "csv" type. It specifies the < path-to-groundtruth-file > file extension.
 

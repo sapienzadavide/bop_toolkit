@@ -388,6 +388,7 @@ if __name__ == '__main__':
     parser.add_argument('--result_filename', default=p['result_filename'],help='files with results.')
     parser.add_argument('--results_path', help='Necessary only if it contains scene_gt and scene_camera', default=p['results_path'])
     parser.add_argument('--eval_path', default=p['eval_path'])
+    parser.add_argument('--dataset_path', default=p['datasets_path'])
     parser.add_argument('--targets_filename', default=p['targets_filename'])
     parser.add_argument('--gt_filename', help='Necessary only if it is csv', default=p['gt_filename'])
     parser.add_argument("--file_path", help='folder to image(s)',
@@ -405,6 +406,7 @@ if __name__ == '__main__':
 #    p['eval_path'] = str(args.eval_path)
     p['targets_filename'] = str(args.targets_filename)
     p['n_top'] = -1
+    p['datasets_path'] = str(args.dataset_path)
 
     args = parser.parse_args()
     main(args, p)
