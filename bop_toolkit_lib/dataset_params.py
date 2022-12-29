@@ -74,6 +74,7 @@ def get_model_params(datasets_path, dataset_name, model_type=None):
   # Object ID's.
   obj_ids = {
     'custom': list(range(1, 2)),
+    'underwater': list(range(1, 5)),
     'lm': list(range(1, 16)),
     'lmo': [1, 5, 6, 8, 9, 10, 11, 12],
     'tless': list(range(1, 31)),
@@ -92,7 +93,8 @@ def get_model_params(datasets_path, dataset_name, model_type=None):
   # ID's of objects with ambiguous views evaluated using the ADI pose error
   # function (the others are evaluated using ADD). See Hodan et al. (ECCVW'16).
   symmetric_obj_ids = {
-    'custom': [],
+    'custom': [1],
+    'underwater': [1, 2, 3, 4],
     'lm': [3, 7, 10, 11],
     'lmo': [10, 11],
     'tless': list(range(1, 31)),
@@ -176,8 +178,18 @@ def get_split_params(datasets_path, dataset_name, split, split_type=None):
 
   p['im_modalities'] = ['rgb', 'depth']
 
+  # Underwater Dataset.
+  if dataset_name == 'underwater':
+    p['scene_ids'] = list(range(1, 5))
+    p['im_size'] = (640, 480)
+
+    if split == 'test':
+      p['depth_range'] = (500.90, 3002.35)
+      p['azimuth_range'] = (0, 2 * math.pi)
+      p['elev_range'] = (0, 0.5 * math.pi)
+
   # Linemod (CUSTOM).
-  if dataset_name == 'custom':
+  elif dataset_name == 'custom':
     p['scene_ids'] = list(range(1, 2))
     p['im_size'] = (640, 480)
 
