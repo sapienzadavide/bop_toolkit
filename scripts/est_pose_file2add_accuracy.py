@@ -114,7 +114,7 @@ def main(args, p):
             gt_filename = args.gt_filename
             gt_poses = inout.load_bop_results(gt_filename)
 
-            # Organize estimated poses
+            # Organize gt poses
             misc.log('Organizing gt poses ...')
             gt_org = {}
             for poses in gt_poses:
@@ -286,6 +286,8 @@ def main(args, p):
                             'errors': errs
                         })
             eval_calc_errors[scene_id] = scene_errs
+        with open("sample.json", "w") as outfile:
+            json.dump(eval_calc_errors, outfile)
         misc.log('Errors have been computed!')
         misc.log('=====================================================')
 
